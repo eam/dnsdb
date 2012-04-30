@@ -1,0 +1,21 @@
+<h1>Listing ips</h1>
+
+<table>
+  <tr>
+    <th>Subnet</th>
+    <th>IP</th>
+    <th>State</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @ips.each do |ip| %>
+  <tr>
+    <td><%= ip.subnet %></td>
+    <td><%= ip.ip %></td>
+    <td><%= ip.state %></td>
+    <td><%= link_to 'Edit', edit_ip_path(ip) %></td>
+  </tr>
+<% end %>
+</table>

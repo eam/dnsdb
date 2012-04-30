@@ -1,0 +1,19 @@
+finish writing FAQ in README
+error if you change state from in_use to available for an IP that exists in record.content
+set defaults in config file for several settings (like defaults for soa record)
+headers to disable automatically creating/modifying domains, soa, ptr records
+don't allow deleting of domain until all records are deleted first
+complete all valiations for record
+404 and 500 errors should respect Accept header
+write audit job that validates records match domain, valid soa, orphan records, ptr errors, etc
+soa serial number should increment date format on change
+only update soa once per transaction (or every N minutes?)
+only allow delete subnet if all IPs are available
+auto create PTR records for AAAA records
+auto create SOA record for in-addr-arpa when we add a subnet?
+automatically set network, gateway and broadcast as in use
+write lots more tests (especially around error handling)
+document web services API
+complete/make usable web UI
+update README to explain how there can be multiple A records with same content, but only one ptr per ip
+update README to explain relationship between A records content and IP resources

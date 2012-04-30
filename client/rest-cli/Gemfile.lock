@@ -1,0 +1,20 @@
+PATH
+  remote: .
+  specs:
+    rest-cli (0.0.2)
+      rest-client
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    mime-types (1.18)
+    rake (0.9.2.2)
+    rest-client (1.6.7)
+      mime-types (>= 1.16)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  rake
+  rest-cli!

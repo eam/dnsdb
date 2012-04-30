@@ -1,0 +1,35 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Name:</b>
+  <%= @domain.name %>
+</p>
+
+<p>
+  <b>Master:</b>
+  <%= @domain.master %>
+</p>
+
+<p>
+  <b>Last check:</b>
+  <%= @domain.last_check %>
+</p>
+
+<p>
+  <b>Type:</b>
+  <%= @domain.type %>
+</p>
+
+<p>
+  <b>Notified serial:</b>
+  <%= @domain.notified_serial %>
+</p>
+
+<p>
+  <b>Account:</b>
+  <%= @domain.account %>
+</p>
+
+
+<%= link_to 'Edit', edit_domain_path(@domain) %> |
+<%= link_to 'Back', domains_path %>

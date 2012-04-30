@@ -1,0 +1,25 @@
+<%= form_for(@subnet) do |f| %>
+  <% if @subnet.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@subnet.errors.count, "error") %> prohibited this subnet from being saved:</h2>
+
+      <ul>
+      <% @subnet.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :base %><br />
+    <%= f.text_field :base %>
+  </div>
+  <div class="field">
+    <%= f.label :mask_bits %><br />
+    <%= f.text_field :mask_bits %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

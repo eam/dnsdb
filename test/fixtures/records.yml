@@ -1,0 +1,30 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  domain_id: 1
+  name: one.example.com
+  type: A
+  content: 11.22.33.44
+  ttl: 300
+  change_date: ~
+two:
+  domain_id: 2
+  name: 44.33.22.11.in-addr.arpa
+  type: PTR
+  content: one.example.com
+  ttl: 10800
+  change_date: ~
+three:
+  domain_id: 1
+  name: example.com
+  type: SOA
+  content: ns.example.com. hostmaster.example.com. 2012041806 7200 1800 604800 3600
+  ttl: 10800
+  change_date: ~
+four:
+  domain_id: 2
+  name: 33.22.11.in-addr.arpa
+  type: SOA
+  content: ns.example.com. hostmaster.example.com. 2012041806 7200 1800 604800 3600
+  ttl: 10800
+  change_date: ~

@@ -1,0 +1,7 @@
+source :rubygems
+
+gem "rake"
+gem "rest-cli", "0.0.1", :path => "../rest-cli/pkg/"
+
+# Specify your gem's dependencies in a gemspec 
+gemspec

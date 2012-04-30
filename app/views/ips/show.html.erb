@@ -1,0 +1,20 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Subnet:</b>
+  <%= @ip.subnet %>
+</p>
+
+<p>
+  <b>Ip:</b>
+  <%= @ip.ip %>
+</p>
+
+<p>
+  <b>state:</b>
+  <%= @ip.state %>
+</p>
+
+
+<%= link_to 'Edit', edit_ip_path(@ip) %> |
+<%= link_to 'Back', ips_path %>

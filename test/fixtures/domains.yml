@@ -1,0 +1,18 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  id: 1
+  name: example.com
+  master: ~
+  last_check: ~
+  type: NATIVE
+  notified_serial: ~
+  account: ~
+two:
+  id: 2
+  name: 33.22.11.in-addr.arpa
+  master: ~
+  last_check: ~
+  type: NATIVE
+  notified_serial: ~
+  account: ~

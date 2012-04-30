@@ -1,0 +1,34 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+#one:
+#  subnet: 1
+#  ip: MyString
+#  state: in_use
+one:
+  subnet: 1
+  ip: 11.22.33.44
+  state: available
+two:
+  subnet: 2
+  ip: 192.168.1.1
+  state: available
+three:
+  subnet: 2
+  ip: 192.168.1.10
+  state: available
+four:
+  subnet: 3
+  ip: 10.22.33.44
+  state: available
+five:
+  subnet: 2
+  ip: 192.168.1.2
+  state: available
+six:
+  subnet: 1
+  ip: 11.22.33.60
+  state: available
+seven:
+  subnet: 2
+  ip: 192.168.222.111
+  state: available

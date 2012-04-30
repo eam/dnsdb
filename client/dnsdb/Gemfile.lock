@@ -1,0 +1,23 @@
+PATH
+  remote: .
+  specs:
+    dnsdb-cli (0.0.1)
+      rest-cli
+
+PATH
+  remote: ../rest-cli/pkg/
+  specs:
+    rest-cli (0.0.1)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    rake (0.9.2.2)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  dnsdb-cli!
+  rake
+  rest-cli (= 0.0.1)!

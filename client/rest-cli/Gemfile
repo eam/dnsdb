@@ -1,0 +1,6 @@
+source :rubygems
+
+gem "rake"
+
+# Specify your gem's dependencies in a gemspec 
+gemspec

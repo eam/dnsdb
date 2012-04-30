@@ -1,0 +1,45 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Name:</b>
+  <%= @record.name %>
+</p>
+
+<p>
+  <b>Domain:</b>
+  <%= @record.domain_id %>
+</p>
+
+<p>
+  <b>Name:</b>
+  <%= @record.name %>
+</p>
+
+<p>
+  <b>Type:</b>
+  <%= @record.type %>
+</p>
+
+<p>
+  <b>Content:</b>
+  <%= @record.content %>
+</p>
+
+<p>
+  <b>Ttl:</b>
+  <%= @record.ttl %>
+</p>
+
+<p>
+  <b>Prio:</b>
+  <%= @record.prio %>
+</p>
+
+<p>
+  <b>Change date:</b>
+  <%= @record.change_date %>
+</p>
+
+
+<%= link_to 'Edit', edit_record_path(@record) %> |
+<%= link_to 'Back', records_path %>
