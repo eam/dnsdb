@@ -8,7 +8,7 @@ class DnsdbCli < RestCli
   def usage(err_msg="") 
     examples = <<EOF
 
-Note that for IPs and subnets you can specify the name or the id.
+Note that for ips, domains and subnets the id may be the name.
 
 Examples:
   # create a subnet (and the corrisponding ips)
@@ -45,15 +45,7 @@ EOF
 
   def before_get_ips
     if @id && @id.match(/^\d+\.\d+.\d+\.\d+$/)
-      @args["ip"] = @id
-      @id = nil
-    end
-  end
-
-  def before_get_subnets
-    if @id && @id.match(/^\d+\.\d+.\d+.\d+\/\d+$/)
-      @args["name"] = @id
-      @id = nil
+      @id = fetch_id("ips", { "ip" => @id })
     end
   end
 
@@ -67,15 +59,71 @@ EOF
     end
   end
 
+  def before_create_subnets
+    if @id
+      (@args["base"], @args["mask_bits"]) = @id.split('/')
+      @id = nil
+    end
+  end
+
+  def before_get_subnets
+    if @id && @id.match(/^\d+\.\d+.\d+.\d+\/\d+$/)
+      @id = fetch_id("subnets", { "name" => @id })
+    end
+  end
+
+  def before_update_subnets
+    if @id && @id.match(/^\d+\.\d+.\d+.\d+\/\d+$/)
+      @id = fetch_id("subnets", { "name" => @id })
+    end
+  end
+
   def before_delete_subnets
     if @id && @id.match(/^\d+\.\d+.\d+.\d+\/\d+$/)
       @id = fetch_id("subnets", { "name" => @id })
     end
   end
 
+  def before_get_domains
+    if @id && !@id.match(/^\d+$/)
+      @id = fetch_id("domains", { "name" => @id })
+    end
+  end
+
+  def before_update_domains
+    if @id && !@id.match(/^\d+$/)
+      @id = fetch_id("domains", { "name" => @id })
+    end
+  end
+
+  def before_delete_domains
+    if @id && !@id.match(/^\d+$/)
+      @id = fetch_id("domains", { "name" => @id })
+    end
+  end
+
+  # TODO it'd be nice if there was a before_global which would always run
+  # that would allow me to always convert --subnet to --subnet_id 
+  # and all --domain to --domain_id
+  def before_get_records
+    if @args["domain"]
+      @args["domain_id"] = fetch_id("domains", { "name" => @args.delete("domain") })
+    end
+  end
+
+  def before_update_records
+    if @args["domain"]
+      @args["domain_id"] = fetch_id("domains", { "name" => @args.delete("domain") })
+    end
+  end
+
   def before_create_records
     if @args["subnet"]
       @args["subnet_id"] = fetch_id("subnets", { "name" => @args.delete("subnet") })
+    end
+
+    if @args["domain"]
+      @args["domain_id"] = fetch_id("domains", { "name" => @args.delete("domain") })
     end
   end
 
@@ -92,11 +140,6 @@ EOF
 
     @log.debug("got id #{id} for #{resource_type}")
     return id
-  end
-
-  def before_create_subnets
-    (@args["base"], @args["mask_bits"]) = @id.split('/')
-    @id = nil
   end
 
   def output_get_subnets(subnets)

@@ -21,9 +21,9 @@ and its bit mask like this:
 This will create the subnet as well as the related 256 entries in the IP table.
 You cannot modify this subnet once it's created, but you can delete it.  All IPs
 in a subnet have a state of <code>available</code> before it can can be deleted.
-The below command deletes the subnet with id 42.
+The below command deletes a particular subnet:
 
-    $ dnsdb delete subnets 42
+    $ dnsdb delete subnets 192.168.1.0/24
 
 You can get a list of all subnets
 
@@ -31,7 +31,7 @@ You can get a list of all subnets
 
 Or the details of a particular subnet
 
-    $ dnsdb get subnets --name 192.168.1.0/24
+    $ dnsdb get subnets 192.168.1.0/24
  
 You cannot create overlapping subnets.
 
@@ -55,10 +55,10 @@ You can allocate an IP from the 192.168.1.0/24 subnet like this:
     $ dnsdb update ips --subnet 192.168.1.0/24 --state in_use
 
 This will choose an available IP from this subnet and change its state to 
-<code>in_use</code>.  If you want to allocate a particular IP (the IP with id 
-99 in the below example), just specify its id when updating the state:
+<code>in_use</code>.  If you want to allocate a particular IP just specify the
+ip when updating the state:
 
-    $ dnsdb update ips 99 --state in_use
+    $ dnsdb update ips 192.168.1.44 --state in_use
 
 ### Domains
 
@@ -72,7 +72,7 @@ You can create a domain like this:
 When you fetch this domain you'll see there are several other fields which you
 can modify (or set at create time):
 
-    $ dnsdb get domain 1
+    $ dnsdb get domain example.com
     {
       "id": 1,
       "name": "example.com",
@@ -113,13 +113,16 @@ This will create a record that looks like this:
       "change_date": null
     }
 
+You have to use the id field rather then the name to uniquely identify a record.
+This is because DNS allows two records with the same name.
+
 These records are designed to be read directly by 
 [PowerDNS](http://powerdns.com).  See the PowerDNS docs for details about how 
 each of these fields are used.
 
 Note that the domain was automatically determined for you.  This is done using
 a best fit algorithm.  You can override this by specifying 
-<code>--domain_id</code> when creating or updating the record.
+<code>--domain</code> when creating or updating the record.
 
 If your DNS server is configured to read this data (i.e. PowerDNS is pointing at
 the DNSDB database) you should be able query this newly created record:
