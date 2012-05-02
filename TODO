@@ -17,3 +17,6 @@ document web services API
 complete/make usable web UI
 update README to explain how there can be multiple A records with same content, but only one ptr per ip
 update README to explain relationship between A records content and IP resources
+validate CNAME content resolves
+respond with deleted object on delete
+command line confirmation for write operations (with --quiet or something to disable)
