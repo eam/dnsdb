@@ -20,3 +20,5 @@ update README to explain relationship between A records content and IP resources
 validate CNAME content resolves
 respond with deleted object on delete
 command line confirmation for write operations (with --quiet or something to disable)
+splitting up base and mask_bits in subnets was a mistake (complete transition to "name")
+cli should convert "--domain foo" to "--domain_id 1" for you
