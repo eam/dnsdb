@@ -19,7 +19,7 @@ class IpsController < ApplicationController
       args["subnet_id"] = subnet.id
     end
   
-    [:id, :ip, :subnet_id].each do |key|
+    [:id, :state, :ip, :subnet_id].each do |key|
       if params[key]
         args[key] = params[key]
       end
