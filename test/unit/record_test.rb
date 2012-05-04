@@ -223,4 +223,31 @@ class RecordTest < ActiveSupport::TestCase
     # there should be two PTR records both pointing at foo.example.com
     assert 2, Record.where(:type => 'PTR', :name => "foo.example.com").count
   end
+
+  test "records with same name type and content" do
+    ip = Ip.first
+    assert Record.create(
+      :type    => 'A',
+      :name    => 'foo.example.com',
+      :content => ip.ip
+    ).valid?
+    
+    r = Record.create(
+      :type    => 'A',
+      :name    => 'foo.example.com',
+      :content => ip.ip
+    )
+
+    assert !r.valid?
+    assert "a record with the same name and content already exists",
+      r.errors.messages[:base][0]
+
+    # but records with different types and the same content/name should be ok
+    assert Record.create(
+      :type    => 'TXT',
+      :name    => 'foo.example.com',
+      :content => ip.ip
+    ).valid?
+
+  end
 end

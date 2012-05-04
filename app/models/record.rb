@@ -1,3 +1,11 @@
+class RecordValidator < ActiveModel::Validator
+  def validate(record)
+    if !record.name_content_type_unique?
+      record.errors[:base] << "a record with the same name and content already exists"
+    end
+  end
+end
+
 class Record < ActiveRecord::Base
 
   self.inheritance_column = 'type_inheritance'
@@ -14,7 +22,8 @@ class Record < ActiveRecord::Base
     :only_integer => true
   }, :allow_nil => true
 
-  #TODO validate that name and content are unique
+  validates_with RecordValidator
+
   #TODO validate that content exists in IP table when type is A
   #TODO validate content is an ipv4 when the type is A
   #TODO validate content is an ipv6 when the type is AAAA
@@ -24,7 +33,7 @@ class Record < ActiveRecord::Base
   #TODO validate there is only one SOA per domain
   #TODO validate PTR, A, AAAA, MX (?) and CNAME last half name matches domain name
   #TODO don't allow changes to the record if the domain is type SLAVE
-  
+
   after_initialize :set_domain
   before_create :create_ptr
   before_update :update_ptr
@@ -34,6 +43,23 @@ class Record < ActiveRecord::Base
   before_destroy :set_ip_available
 
   after_save :update_soa_serial
+
+  def name_content_type_unique?
+    r = Record.where(
+      :name    => self.name, 
+      :content => self.content,
+      :type    => self.type
+    )
+
+    if r.count == 0
+      return true
+    elsif r.count == 1 && r.first.id == self.id
+      # if the record that was returned is this record, then we're okay
+      return true
+    end
+
+    return false
+  end
 
   def set_domain
     if self.domain
