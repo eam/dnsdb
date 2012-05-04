@@ -3,6 +3,10 @@ class RecordValidator < ActiveModel::Validator
     if !record.name_content_type_unique?
       record.errors[:base] << "a record with the same name and content already exists"
     end
+
+    if !record.A_content_is_managed_ip?
+      record.errors[:content] << "#{record.content} is not a managed IP resource"
+    end
   end
 end
 
@@ -24,7 +28,6 @@ class Record < ActiveRecord::Base
 
   validates_with RecordValidator
 
-  #TODO validate that content exists in IP table when type is A
   #TODO validate content is an ipv4 when the type is A
   #TODO validate content is an ipv6 when the type is AAAA
   #TODO validate name is a hostname when the type is A or AAAA or CNAME
@@ -59,6 +62,14 @@ class Record < ActiveRecord::Base
     end
 
     return false
+  end
+
+  def A_content_is_managed_ip?
+    if self.type != "A"
+      return true
+    end
+
+    return !Ip.find_by_ip(self.content).nil?
   end
 
   def set_domain

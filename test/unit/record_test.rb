@@ -165,13 +165,13 @@ class RecordTest < ActiveSupport::TestCase
   end
 
   test "cannot use an unmanaged IP" do
-    assert_raise RuntimeError do
-      Record.create(
-        :type    => 'A',
-        :name    => 'foo.example.com',
-        :content => '8.8.8.8'
-      )
-    end
+    r = Record.create(
+      :type    => 'A',
+      :name    => 'foo.example.com',
+      :content => '8.8.8.8'
+    )
+
+    assert "8.8.8.8 is not a managed IP resource", r.errors.messages[:content]
   end
 
   test "IP is state is managed" do
