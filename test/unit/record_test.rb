@@ -265,6 +265,18 @@ class RecordTest < ActiveSupport::TestCase
       :name    => 'foo.example.com',
       :content => ip.ip
     ).valid?
+  end
 
+  test "name must match domain name" do
+    d = Domain.first
+    r = Record.create(
+      :domain_id => d.id,
+      :type      => 'A',
+      :name      => 'foo.bar.com',
+      :content   => Ip.first.ip
+    )
+
+    assert !r.valid?
+    assert "name does not seem to be in domain", r.errors.messages[:domain][0]
   end
 end

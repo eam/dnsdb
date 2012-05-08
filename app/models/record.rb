@@ -7,6 +7,18 @@ class RecordValidator < ActiveModel::Validator
     if !record.A_content_is_managed_ip?
       record.errors[:content] << "#{record.content} is not a managed IP resource"
     end
+
+    # validate PTR, A, AAAA, MX, TXT and CNAME last half name matches domain name
+    if %w(PTR A AAAA MX TXT CNAME).include?(record.type) && record.domain 
+      begin 
+        # determine_domain may throw
+        if record.determine_domain != record.domain
+          raise
+        end
+      rescue
+        record.errors[:domain] << "name does not seem to be in domain" 
+      end
+    end
   end
 end
 
@@ -34,7 +46,6 @@ class Record < ActiveRecord::Base
   #TODO validate content is a hostname when the type is PTR or a CNAME
   #TODO validate that content is unique for all PTR records
   #TODO validate there is only one SOA per domain
-  #TODO validate PTR, A, AAAA, MX (?) and CNAME last half name matches domain name
   #TODO don't allow changes to the record if the domain is type SLAVE
 
   after_initialize :set_domain
@@ -77,6 +88,12 @@ class Record < ActiveRecord::Base
       return true # already set
     end
 
+    self.domain = determine_domain
+    self.domain_id = self.domain.id
+    Rails.logger.debug("automatically determined domain (#{domain.name}) for record with name (#{self.name})")
+  end
+
+  def determine_domain
     unless %w(A AAAA MX CNAME TXT PTR).include?(self.type)
       raise "cannot determine domain name for records of type #{self.type}"
     end
@@ -90,10 +107,7 @@ class Record < ActiveRecord::Base
         name_parts[i-name_parts.size..-1].join('.')
       )
       if candidate
-        Rails.logger.debug("automatically determined domain (#{candidate.name}) for record with name (#{self.name})")
-        self.domain = candidate
-        self.domain_id = domain.id
-        return true
+        return candidate
       end
     end
 
