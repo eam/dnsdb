@@ -88,7 +88,7 @@ class RecordTest < ActiveSupport::TestCase
       :name => "foo.bar.baz.example.com",
       :type => "NATIVE"
     )
-    Domain.create( 
+    baz_domain = Domain.create( 
       :name => "baz.example.com",
       :type => "NATIVE"
     )
@@ -104,6 +104,23 @@ class RecordTest < ActiveSupport::TestCase
       :type    => 'A',
       :name    => 'bar.baz.example.com',
       :content => '192.168.1.2'
+    )
+    assert_equal "baz.example.com", r.domain.name
+
+    # override what is automatically determined 
+    r = Record.create(
+      :type      => 'A',
+      :name      => 'blonk.foo.bar.baz.example.com',
+      :content   => '192.168.1.3',
+      :domain_id => baz_domain.id 
+    )
+    assert_equal "baz.example.com", r.domain.name
+
+    r = Record.create(
+      :type    => 'A',
+      :name    => 'blink.foo.bar.baz.example.com',
+      :content => '192.168.1.4',
+      :domain  => baz_domain
     )
     assert_equal "baz.example.com", r.domain.name
 
