@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.description = "Extend this class to quickly write an interface to your REST web service"
   s.authors     = ["Jay Buffington"]
   s.email       = 'me@jaybuff.com'
-  s.files       = ["lib/rest-cli.rb"]
+  s.files       = ["lib/rest-cli.rb", "lib/json-resource.rb"]
 
   s.add_dependency 'rest-client'
 end

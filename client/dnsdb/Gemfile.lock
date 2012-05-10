@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    dnsdb-cli (0.0.1)
+    dnsdb (0.0.3)
       rest-cli
 
 PATH
@@ -18,6 +18,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  dnsdb-cli!
+  dnsdb!
   rake
   rest-cli (= 0.0.1)!

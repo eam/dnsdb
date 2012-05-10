@@ -13,6 +13,7 @@ auto create PTR records for AAAA records
 auto create SOA record for in-addr-arpa when we add a subnet?
 automatically set network, gateway and broadcast as in use
 write lots more tests (especially around error handling)
+write tests for client library and CLI
 document web services API
 complete/make usable web UI
 update README to explain how there can be multiple A records with same content, but only one ptr per ip

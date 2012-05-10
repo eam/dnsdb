@@ -3,7 +3,7 @@ require 'rest-cli'
 require 'json'
 
 class DnsdbCli < RestCli 
-  VERSION = "0.0.2"
+  VERSION = "0.0.3"
 
   def usage(err_msg="") 
     examples = <<EOF

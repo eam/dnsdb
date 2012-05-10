@@ -3,12 +3,11 @@
 
 require 'rubygems'
 require 'yaml'
-require 'rest_client'
-require 'json'
 require 'logger'
+require 'json-resource'
 
 class RestCli
-  VERSION = '0.0.2'
+  VERSION = '0.0.3'
   def initialize(opts=[])
     @opts = opts
 
@@ -38,79 +37,38 @@ class RestCli
       self.send(before_method)
     end
 
-    url = @base_url + "/" + @resource
-    if !@id.nil?
-       url += "/#{@id}"
-    end
-     
-    @log.debug(http_method.to_s + " " + url)
-    req_args = {
-      :method => http_method,
-      :url => url, 
-      :headers => {
-        :content_type => :json, 
-        :accept => :json 
-      }
-    }
-
-    # TODO support reading from stdin
-    content = ""
-    if !@args.empty?
-      content = JSON.pretty_generate( @args )
-      @log.debug("content: " + content)
-    end 
-
-    if [:put, :post].include?(http_method)
-      req_args[:payload] = content
+    dnsdb = RestClient::Resource::Json.new(@base_url)
+    resp = ""
+    case @action
+    when 'get', 'update'
+      resp = dnsdb.send(@action, @resource, @id, @args)
+    when 'delete'
+      resp = dnsdb.send(@action, @resource, @id)
+    when 'create'
+      resp = dnsdb.send(@action, @resource, @args)
+    else
+      raise "failed to dispatch for action #{@action}"
     end
 
-    req_success = false
-    begin
-      if http_method == :get
-        resp = RestClient.get url, {:params => @args, :accept => :json}
-      else 
-        resp = RestClient::Request.execute(req_args)
-      end
-      req_success = true
-    rescue RestClient::ExceptionWithResponse => e
-      @log.warn( e.message )
-      resp = e.response
-    end
-
+    resp_obj = dnsdb.response
     if @raw
-      puts resp.body
+      puts resp_obj.body
       return
     end
-
-    unless resp.body.nil? or resp.body.empty?
-      begin
-        resp_obj = JSON.parse( resp.body )
-      rescue
-        @log.error("unable to parse response, which was: " + resp.body)
-      end
-    end
+    
+    req_success = (resp_obj.code < 400)
 
     output_method = "output_" + @action + "_" + @resource
     output = false
     if req_success and respond_to?(output_method)
-      output = self.send(output_method, resp_obj)
+      output = self.send(output_method, resp)
     end
 
-    if !output && !resp_obj.nil?
-      puts JSON.pretty_generate(resp_obj)
+    if !output && resp && !resp.empty?
+      puts JSON.pretty_generate(resp)
     end
   end
     
-  def http_method(action=@action)
-    method_for = {
-      "create" => :post,
-      "get"    => :get,
-      "update" => :put,
-      "delete" => :delete,
-    }
-    return method_for[action]
-  end
-
   def usage(err_msg="")
     return <<EOF
 #{err_msg}
@@ -138,7 +96,7 @@ EOF
 
     # get the action
     @action = @opts.shift
-    if @action.nil? || !http_method(@action)
+    if @action.nil? || !%w(create get update delete).include?(@action) 
       exit_with_usage("missing or invalid action")
     end
 

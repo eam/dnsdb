@@ -1,15 +1,15 @@
 require 'dnsdb-cli'
 
 Gem::Specification.new do |s|
-  s.name        = 'dnsdb-cli'
+  s.name        = 'dnsdb'
   s.version     = DnsdbCli::VERSION
-  s.date        = '2012-04-28'
-  s.summary     = "cli for DNSDB"
-  s.description = "Command line interface for CRUD operations into DNSDB"
+  s.date        = '2012-05-10'
+  s.summary     = "ruby client and cli for DNSDB"
+  s.description = "ruby client and command line interface for CRUD operations into DNSDB"
   s.authors     = ["Jay Buffington"]
   s.email       = 'me@jaybuff.com'
 
-  s.files       = ["lib/dnsdb-cli.rb"]
+  s.files       = ["lib/dnsdb-cli.rb", "lib/dnsdb.rb"]
 
   s.add_dependency 'rest-cli'
   s.executables << 'dnsdb'
