@@ -9,7 +9,7 @@ class RecordTest < ActiveSupport::TestCase
       :content => "10.22.33.44"
     ).valid?
 
-    # created one A, PTR and a new SOA (for reverse) 
+    # created one A, PTR and a new SOA (for reverse)
     # another A/PTR pair and two SOA records were created by fixtures
     assert_equal 2, Record.where(:type => "PTR").count
     assert_equal 2, Record.where(:type => "A").count
@@ -31,8 +31,8 @@ class RecordTest < ActiveSupport::TestCase
     ptr_soa = r.ptr.domain.soa
     a_serial_was = a_soa.content.split(/\s+/)[2]
     ptr_serial_was = ptr_soa.content.split(/\s+/)[2]
-    
-    # updating a record should bump the soa serial numbers 
+
+    # updating a record should bump the soa serial numbers
     # for both the A and PTR SOA records
     r.name = "abc.example.com"
     r.save!
@@ -56,7 +56,7 @@ class RecordTest < ActiveSupport::TestCase
 
     ptr = Record.where(:type => "PTR").last
     assert_equal "bar.example.com", ptr.content
-    
+
     # test changing the content to stay in the same reverse domain
     r.content = "11.22.33.60"
     r.save!
@@ -74,7 +74,7 @@ class RecordTest < ActiveSupport::TestCase
     assert_equal "111.222.168.192.in-addr.arpa", ptr.name
 
     # there should be four records now:
-    # three SOAs (one for new domain, one for old and one for reverse), 
+    # three SOAs (one for new domain, one for old and one for reverse),
     # plus the A and the PTR
     assert_equal 5, Record.count
 
@@ -84,11 +84,11 @@ class RecordTest < ActiveSupport::TestCase
 
   test "automatically set domain" do
     # create a couple of domains for this test
-    Domain.create( 
+    Domain.create(
       :name => "foo.bar.baz.example.com",
       :type => "NATIVE"
     )
-    baz_domain = Domain.create( 
+    baz_domain = Domain.create(
       :name => "baz.example.com",
       :type => "NATIVE"
     )
@@ -107,12 +107,12 @@ class RecordTest < ActiveSupport::TestCase
     )
     assert_equal "baz.example.com", r.domain.name
 
-    # override what is automatically determined 
+    # override what is automatically determined
     r = Record.create(
       :type      => 'A',
       :name      => 'blonk.foo.bar.baz.example.com',
       :content   => '192.168.1.3',
-      :domain_id => baz_domain.id 
+      :domain_id => baz_domain.id
     )
     assert_equal "baz.example.com", r.domain.name
 
@@ -160,7 +160,7 @@ class RecordTest < ActiveSupport::TestCase
       assert_equal 1, Record.where(:name => "10.1.168.192.in-addr.arpa").count, "only one PTR was created"
       ptr = Record.where(:name => "10.1.168.192.in-addr.arpa").first
       assert_equal "abc.example.com", ptr.content, "the PTR record points to the first record"
-      
+
       assert_equal 0, Record.where(:content => "def.example.com").count, "no ptr was found for 2nd record"
 
       r2.destroy
@@ -188,7 +188,7 @@ class RecordTest < ActiveSupport::TestCase
       :content => '8.8.8.8'
     )
 
-    assert "8.8.8.8 is not a managed IP resource", r.errors.messages[:content]
+    assert_equal "8.8.8.8 is not a managed IP resource", r.errors.messages[:content][0]
   end
 
   test "IP is state is managed" do
@@ -206,7 +206,7 @@ class RecordTest < ActiveSupport::TestCase
     another_ip = Ip.last
     r.content = another_ip.ip
     r.save
-    
+
     ip.reload
     assert_equal "available", ip.state
 
@@ -215,7 +215,7 @@ class RecordTest < ActiveSupport::TestCase
 
     # IP is returned to available when A record is deleted
     r.destroy
-    
+
     another_ip.reload
     assert_equal "available", another_ip.state
   end
@@ -238,7 +238,7 @@ class RecordTest < ActiveSupport::TestCase
     ).valid?
 
     # there should be two PTR records both pointing at foo.example.com
-    assert 2, Record.where(:type => 'PTR', :name => "foo.example.com").count
+    assert_equal 2, Record.where(:type => 'PTR', :content => "foo.example.com").count
   end
 
   test "records with same name type and content" do
@@ -248,7 +248,7 @@ class RecordTest < ActiveSupport::TestCase
       :name    => 'foo.example.com',
       :content => ip.ip
     ).valid?
-    
+
     r = Record.create(
       :type    => 'A',
       :name    => 'foo.example.com',
@@ -256,7 +256,7 @@ class RecordTest < ActiveSupport::TestCase
     )
 
     assert !r.valid?
-    assert "a record with the same name and content already exists",
+    assert_equal "a record with the same name and content already exists",
       r.errors.messages[:base][0]
 
     # but records with different types and the same content/name should be ok
@@ -277,6 +277,6 @@ class RecordTest < ActiveSupport::TestCase
     )
 
     assert !r.valid?
-    assert "name does not seem to be in domain", r.errors.messages[:domain][0]
+    assert_equal "name does not seem to be in domain", r.errors.messages[:domain][0]
   end
 end
