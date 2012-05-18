@@ -98,7 +98,7 @@ class Record < ActiveRecord::Base
       return true
     end
 
-    return false
+    false
   end
 
   def A_content_is_managed_ip?
@@ -106,7 +106,7 @@ class Record < ActiveRecord::Base
       return true
     end
 
-    return !Ip.find_by_ip(self.content).nil?
+    !Ip.find_by_ip(self.content).nil?
   end
 
   def set_domain
