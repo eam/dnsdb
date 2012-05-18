@@ -22,3 +22,4 @@ respond with deleted object on delete
 command line confirmation for write operations (with --quiet or something to disable)
 splitting up base and mask_bits in subnets was a mistake (complete transition to "name")
 cli should convert "--domain foo" to "--domain_id 1" for you
+cli should warn you if you try to create an A record with a name that already exists
