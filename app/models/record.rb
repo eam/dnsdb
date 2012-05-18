@@ -9,14 +9,14 @@ class RecordValidator < ActiveModel::Validator
     end
 
     # validate PTR, A, AAAA, MX, TXT and CNAME last half name matches domain name
-    if %w(PTR A AAAA MX TXT CNAME).include?(record.type) && record.domain 
-      begin 
+    if %w(PTR A AAAA MX TXT CNAME).include?(record.type) && record.domain
+      begin
         # determine_domain may throw
         if record.determine_domain != record.domain
           raise
         end
       rescue
-        record.errors[:domain] << "name does not seem to be in domain" 
+        record.errors[:domain] << "name does not seem to be in domain"
       end
     end
   end
@@ -60,7 +60,7 @@ class Record < ActiveRecord::Base
 
   def name_content_type_unique?
     r = Record.where(
-      :name    => self.name, 
+      :name    => self.name,
       :content => self.content,
       :type    => self.type
     )
@@ -98,8 +98,8 @@ class Record < ActiveRecord::Base
       raise "cannot determine domain name for records of type #{self.type}"
     end
 
-    # start with the "biggest" subdomain and work our way backwards until we 
-    # find a match.  Note that foo.example.com belongs in the example.com 
+    # start with the "biggest" subdomain and work our way backwards until we
+    # find a match.  Note that foo.example.com belongs in the example.com
     # domain, not foo.example.com (record names and domain names can overlap)
     name_parts = self.name.split('.')
     (1..name_parts.size-1).each do |i|
@@ -116,7 +116,7 @@ class Record < ActiveRecord::Base
 
   def create_ptr
     if type == 'A'
-      ptr = self.ptr 
+      ptr = self.ptr
       if ptr.new_record?
         ptr.save
       elsif ptr.content != content
@@ -138,7 +138,7 @@ class Record < ActiveRecord::Base
   def destroy_ptr
     if type == 'A'
       ptr = self.ptr
-      # the ptr could be pointing to some other record in the scenario where 
+      # the ptr could be pointing to some other record in the scenario where
       # there are two A records with the same content, but only one PTR
       # valid example:
       # A   => foo.example.com          => 192.168.1.1
@@ -171,7 +171,7 @@ class Record < ActiveRecord::Base
       raise "cannot create A record for #{name} because #{content} is not a managed IP"
     end
 
-    # TODO what if the type and the content were changed? 
+    # TODO what if the type and the content were changed?
     if self.content_changed?
       old_ip = Ip.find_by_ip(self.content_was)
       if old_ip
@@ -189,7 +189,7 @@ class Record < ActiveRecord::Base
     if self.type == 'A'
       soas_to_update.push( self.ptr.domain.soa )
     end
-    
+
     if self.type != 'SOA'
       soas_to_update.push( self.domain.soa )
     end
@@ -209,27 +209,27 @@ class Record < ActiveRecord::Base
   end
 
   # given an IP address return the matching PTR record.
-  # 
+  #
   # You shouldn't have two PTR records for one IP
   # however, it's valid to have two A records with the same IP
   # (this is usually the case with round robin load distribution setups)
-  # 
+  #
   # if the record already exists, it is returned
   # if it does not exist, it is initialized (but not saved) and returned
-  def ptr(a_content=self.content, a_name=self.name, a_type=self.type) 
+  def ptr(a_content=self.content, a_name=self.name, a_type=self.type)
     if a_type != "A"
       raise "Can't get a matching PTR record for a non-A record (record name #{self.name})"
     end
 
     # example:
-    # record with the ip 204.77.168.10 should have a PTR record with the 
-    # content of 10.168.77.204.in-addr.arpa in the domain 
+    # record with the ip 204.77.168.10 should have a PTR record with the
+    # content of 10.168.77.204.in-addr.arpa in the domain
     # 168.77.204.in-addr.arpa
     rev_ip = a_content.split('.').reverse
     domain_name = rev_ip[1..3].join('.') + '.in-addr.arpa'
     domain = Domain.find_by_name( domain_name )
 
-    if domain.nil? 
+    if domain.nil?
       # XXX this is questionable
       # TODO make type configurable?
       domain = Domain.create!(:name => domain_name, :type => "NATIVE")
@@ -239,12 +239,12 @@ class Record < ActiveRecord::Base
     name = rev_ip.join('.') + '.in-addr.arpa'
 
     ptr = Record.find_or_initialize_by_name_and_type_and_domain_id(
-      :name       => name, 
+      :name       => name,
       :type       => 'PTR',
       :domain_id  => domain.id
     )
 
-    # only set the name if we initialized a new record rather than 
+    # only set the name if we initialized a new record rather than
     # found an existing one
     # this allows us to avoid having two PTR records pointing to the same IP
     if ptr.new_record?
