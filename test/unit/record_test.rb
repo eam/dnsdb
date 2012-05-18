@@ -1,5 +1,12 @@
 require 'test_helper'
 
+# mock
+class RecordValidator
+  def resolves?(hostname)
+    true
+  end
+end
+
 class RecordTest < ActiveSupport::TestCase
   test "creating an A record creates PTR" do
     assert Record.create(

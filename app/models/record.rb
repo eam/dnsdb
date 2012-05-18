@@ -23,6 +23,27 @@ class RecordValidator < ActiveModel::Validator
         record.errors[:domain] << "name does not seem to be in domain"
       end
     end
+
+    # validate content of PTR and CNAME records are resolvable
+    # note that the content for these records doesn't have to be in a domain
+    # that we manage
+    #if %(PTR CNAME).include?(record.type) && `host #{record.content}`.match(/NXDOMAIN/)
+    if %(PTR CNAME).include?(record.type) && !resolves?(record.content)
+      record.errors[:content] << "content does not resolve"
+    end
+  end
+
+  # FIXME if we get SERVFAIL here, we incorrectly return true, but I don't want
+  # to return false, either.
+  # tried to use resolv library, but when using something like opendns we got
+  # 67.215.65.132 even though the server got a NXDOMAIN response so instead we
+  # shell out to the host command :(
+  def resolves?(hostname)
+    if `host #{hostname}`.match(/NXDOMAIN/)
+      return false
+    end
+
+    true
   end
 end
 
@@ -44,7 +65,6 @@ class Record < ActiveRecord::Base
 
   validates_with RecordValidator
 
-  #TODO validate content is a hostname when the type is PTR or a CNAME
   #TODO validate that content is unique for all PTR records
   #TODO validate there is only one SOA per domain
   #TODO don't allow changes to the record if the domain is type SLAVE
