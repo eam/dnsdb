@@ -60,11 +60,36 @@ class Record < ActiveRecord::Base
   after_save :update_soa_serial
 
   def name_content_type_unique?
-    r = Record.where(
+    self.record_unique_where?(
       :name    => self.name,
       :content => self.content,
       :type    => self.type
     )
+  end
+
+  def content_type_unique?
+    self.record_unique_where?(
+      :content => self.content,
+      :type    => self.type
+    )
+  end
+
+  def name_content_unique?
+    self.record_unique_where?(
+      :name    => self.name,
+      :content => self.content
+    )
+  end
+
+  def domain_type_unique?
+    self.record_unique_where?(
+      :domain_id => self.domain_id,
+      :type      => self.type
+    )
+  end
+
+  def record_unique_where?(where_constraints=Hash.new)
+    r = Record.where(where_constraints)
 
     if r.count == 0
       return true
