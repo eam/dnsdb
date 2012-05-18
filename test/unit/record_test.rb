@@ -279,4 +279,15 @@ class RecordTest < ActiveSupport::TestCase
     assert !r.valid?
     assert_equal "name does not seem to be in domain", r.errors.messages[:domain][0]
   end
+
+  test "content must be a valid IPv6 address for AAAA" do
+    r = Record.create(
+      :type      => 'AAAA',
+      :name      => 'foo.example.com',
+      :content   => Ip.first.ip
+    )
+
+    assert !r.valid?
+    assert_equal "content must be a valid IPv6 address for AAAA records", r.errors.messages[:content][0]
+  end
 end

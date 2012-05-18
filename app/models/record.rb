@@ -1,5 +1,9 @@
 class RecordValidator < ActiveModel::Validator
   def validate(record)
+    if record.type == "AAAA" && !record.content.match(Resolv::IPv6::Regex)
+      record.errors[:content] << "content must be a valid IPv6 address for AAAA records"
+    end
+
     if !record.name_content_type_unique?
       record.errors[:base] << "a record with the same name and content already exists"
     end
@@ -40,9 +44,6 @@ class Record < ActiveRecord::Base
 
   validates_with RecordValidator
 
-  #TODO validate content is an ipv4 when the type is A
-  #TODO validate content is an ipv6 when the type is AAAA
-  #TODO validate name is a hostname when the type is A or AAAA or CNAME
   #TODO validate content is a hostname when the type is PTR or a CNAME
   #TODO validate that content is unique for all PTR records
   #TODO validate there is only one SOA per domain
