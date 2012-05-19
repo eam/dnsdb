@@ -8,6 +8,10 @@ class RecordValidator < ActiveModel::Validator
       record.errors[:base] << "a record with the same name and content already exists"
     end
 
+    if record.type == "CNAME" && !record.name_unique?
+      record.errors[:name] << "CNAMEs must have a unique name"
+    end
+
     if !record.A_content_is_managed_ip?
       record.errors[:content] << "#{record.content} is not a managed IP resource"
     end
@@ -27,7 +31,6 @@ class RecordValidator < ActiveModel::Validator
     # validate content of PTR and CNAME records are resolvable
     # note that the content for these records doesn't have to be in a domain
     # that we manage
-    #if %(PTR CNAME).include?(record.type) && `host #{record.content}`.match(/NXDOMAIN/)
     if %(PTR CNAME).include?(record.type) && !resolves?(record.content)
       record.errors[:content] << "content does not resolve"
     end
@@ -94,10 +97,9 @@ class Record < ActiveRecord::Base
     )
   end
 
-  def name_content_unique?
+  def name_unique?
     self.record_unique_where?(
-      :name    => self.name,
-      :content => self.content
+      :name => self.name
     )
   end
 

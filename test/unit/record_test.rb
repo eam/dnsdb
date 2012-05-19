@@ -297,4 +297,21 @@ class RecordTest < ActiveSupport::TestCase
     assert !r.valid?
     assert_equal "content must be a valid IPv6 address for AAAA records", r.errors.messages[:content][0]
   end
+
+  test "CNAMEs must have unique name" do
+    Record.create(
+      :type      => 'A',
+      :name      => 'foo.example.com',
+      :content   => Ip.first.ip
+    )
+
+    r = Record.create(
+      :type      => 'CNAME',
+      :name      => 'foo.example.com',
+      :content   => 'foo-alias.example.com'
+    )
+
+    assert !r.valid?
+    assert_equal "CNAMEs must have a unique name", r.errors.messages[:name][0]
+  end
 end
