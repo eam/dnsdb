@@ -314,4 +314,21 @@ class RecordTest < ActiveSupport::TestCase
     assert !r.valid?
     assert_equal "CNAMEs must have a unique name", r.errors.messages[:name][0]
   end
+
+  test "PTR records must have unique names" do
+    Record.create(
+      :type      => 'PTR',
+      :name      => '1.33.22.11.in-addr.arpa',
+      :content   => 'foo.example.com'
+    )
+
+    r = Record.create(
+      :type      => 'PTR',
+      :name      => '1.33.22.11.in-addr.arpa',
+      :content   => 'bar.example.com'
+    )
+
+    assert !r.valid?
+    assert_equal "name for PTR records must be unique", r.errors.messages[:name][0]
+  end
 end

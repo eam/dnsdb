@@ -12,6 +12,10 @@ class RecordValidator < ActiveModel::Validator
       record.errors[:name] << "CNAMEs must have a unique name"
     end
 
+    if record.type == "PTR" && !record.name_type_unique?
+      record.errors[:name] << "name for PTR records must be unique"
+    end
+
     if !record.A_content_is_managed_ip?
       record.errors[:content] << "#{record.content} is not a managed IP resource"
     end
@@ -90,10 +94,10 @@ class Record < ActiveRecord::Base
     )
   end
 
-  def content_type_unique?
+  def name_type_unique?
     self.record_unique_where?(
-      :content => self.content,
-      :type    => self.type
+      :name => self.name,
+      :type => self.type
     )
   end
 
