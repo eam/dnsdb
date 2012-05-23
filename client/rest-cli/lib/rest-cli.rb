@@ -1,4 +1,4 @@
-# rest-cli - simple class for building command line interface to REST web 
+# rest-cli - simple class for building command line interface to REST web
 # services
 
 require 'rubygems'
@@ -7,7 +7,6 @@ require 'logger'
 require 'json-resource'
 
 class RestCli
-  VERSION = '0.0.3'
   def initialize(opts=[])
     @opts = opts
 
@@ -27,7 +26,7 @@ class RestCli
   def set_defaults
   end
 
-  def run 
+  def run
     if @help
       exit_with_usage
     end
@@ -55,7 +54,7 @@ class RestCli
       puts resp_obj.body
       return
     end
-    
+
     req_success = (resp_obj.code < 400)
 
     output_method = "output_" + @action + "_" + @resource
@@ -68,7 +67,7 @@ class RestCli
       puts JSON.pretty_generate(resp)
     end
   end
-    
+
   def usage(err_msg="")
     return <<EOF
 #{err_msg}
@@ -81,12 +80,12 @@ Global Options:
     --verbose     print debugging information
     --url <url>   the base url to preface all HTTP requests with
     --raw         do not format the output
-    
+
 All other key/value options are structured as a JSON object and sent as the body
 of the HTTP request.
 EOF
   end
-  
+
 
   private
   def parse_opts
@@ -96,7 +95,7 @@ EOF
 
     # get the action
     @action = @opts.shift
-    if @action.nil? || !%w(create get update delete).include?(@action) 
+    if @action.nil? || !%w(create get update delete).include?(@action)
       exit_with_usage("missing or invalid action")
     end
 
