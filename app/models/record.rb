@@ -32,10 +32,10 @@ class RecordValidator < ActiveModel::Validator
       end
     end
 
-    # validate content of PTR and CNAME records are resolvable
+    # validate content of CNAME records are resolvable
     # note that the content for these records doesn't have to be in a domain
     # that we manage
-    if %(PTR CNAME).include?(record.type) && !resolves?(record.content)
+    if record.type == "CNAME" && !resolves?(record.content)
       record.errors[:content] << "content does not resolve"
     end
   end
