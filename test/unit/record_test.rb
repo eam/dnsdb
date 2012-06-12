@@ -331,4 +331,32 @@ class RecordTest < ActiveSupport::TestCase
     assert !r.valid?
     assert_equal "name for PTR records must be unique", r.errors.messages[:name][0]
   end
+
+  test "hostnames must be valid according to rfc 1123" do
+    r = Record.create(
+      :type      => 'A',
+      :name      => 'bogus,comma.example.com',
+      :content   => Ip.first.ip
+    )
+
+    assert !r.valid?
+    assert_equal "name is not a valid hostname", r.errors.messages[:name][0]
+
+    r = Record.create(
+      :type      => 'CNAME',
+      :name      => '-bogus-.example.com',
+      :content   => 'foo.example.com'
+    )
+
+    assert !r.valid?
+    assert_equal "name is not a valid hostname", r.errors.messages[:name][0]
+
+    r = Record.create(
+      :type      => 'A',
+      :name      => '1800flowers.example.com',
+      :content   => Ip.first.ip
+    )
+
+    assert r.valid?
+  end
 end

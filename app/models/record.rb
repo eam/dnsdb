@@ -1,5 +1,9 @@
 class RecordValidator < ActiveModel::Validator
   def validate(record)
+    if %(A AAAA MX TXT CNAME).include?(record.type) && !valid_hostname?(record.name)
+      record.errors[:name] << "name is not a valid hostname"
+    end
+
     if record.type == "AAAA" && !record.content.match(Resolv::IPv6::Regex)
       record.errors[:content] << "content must be a valid IPv6 address for AAAA records"
     end
@@ -38,6 +42,10 @@ class RecordValidator < ActiveModel::Validator
     if record.type == "CNAME" && !resolves?(record.content)
       record.errors[:content] << "content does not resolve"
     end
+  end
+
+  def valid_hostname?(hostname)
+    return hostname.match /^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$/
   end
 
   # FIXME if we get SERVFAIL here, we incorrectly return true, but I don't want
