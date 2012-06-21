@@ -36,20 +36,20 @@ class RestCli
       self.send(before_method)
     end
 
-    dnsdb = RestClient::Resource::Json.new(@base_url)
+    json_rsrc = RestClient::Resource::Json.new(@base_url)
     resp = ""
     case @action
     when 'get', 'update'
-      resp = dnsdb.send(@action, @resource, @id, @args)
+      resp = json_rsrc.send(@action, @resource, @id, @args)
     when 'delete'
-      resp = dnsdb.send(@action, @resource, @id)
+      resp = json_rsrc.send(@action, @resource, @id)
     when 'create'
-      resp = dnsdb.send(@action, @resource, @args)
+      resp = json_rsrc.send(@action, @resource, @args)
     else
       raise "failed to dispatch for action #{@action}"
     end
 
-    resp_obj = dnsdb.response
+    resp_obj = json_rsrc.response
     if @raw
       puts resp_obj.body
       return
