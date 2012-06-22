@@ -44,38 +44,38 @@ class RestCli
     end
 
     json_rsrc = RestClient::Resource::Json.new(@base_url)
-    resp = ""
-    begin
-      case @action
-      when 'get', 'update'
-        resp = json_rsrc.send(@action, @resource, @id, @args)
-      when 'delete'
-        resp = json_rsrc.send(@action, @resource, @id)
-      when 'create'
-        resp = json_rsrc.send(@action, @resource, @args)
-      else
-        raise "failed to dispatch for action #{@action}"
-      end
-    rescue RestClient::ResourceNotFound => e
-      @log.info e.message
-      exit_with_usage "#{@resource} is not a valid resource"
+    case @action
+    when 'get', 'update'
+      resp = json_rsrc.send(@action, @resource, @id, @args)
+    when 'delete'
+      resp = json_rsrc.send(@action, @resource, @id)
+    when 'create'
+      resp = json_rsrc.send(@action, @resource, @args)
+    else
+      raise "failed to dispatch for action #{@action}"
     end
 
     resp_obj = json_rsrc.response
     if @raw
       puts resp_obj.body
-      return
     end
 
     req_success = (resp_obj.code < 400)
+    if !req_success
+      $stderr.puts "#{resp_obj.code} #{RestClient::STATUSES[resp_obj.code]}"
+
+      if resp_obj.code == 404
+        exit_with_usage "#{@resource} is not a valid resource"
+      end
+    end
 
     output_method = "output_" + @action + "_" + @resource
     output = false
-    if resp and req_success and respond_to?(output_method)
+    if !@raw && resp and req_success and respond_to?(output_method)
       output = self.send(output_method, resp)
     end
 
-    if !output && resp && !resp.empty?
+    if !@raw && !output && resp && !resp.empty?
       puts JSON.pretty_generate(resp)
     end
   end
