@@ -38,15 +38,20 @@ class RestCli
 
     json_rsrc = RestClient::Resource::Json.new(@base_url)
     resp = ""
-    case @action
-    when 'get', 'update'
-      resp = json_rsrc.send(@action, @resource, @id, @args)
-    when 'delete'
-      resp = json_rsrc.send(@action, @resource, @id)
-    when 'create'
-      resp = json_rsrc.send(@action, @resource, @args)
-    else
-      raise "failed to dispatch for action #{@action}"
+    begin
+      case @action
+      when 'get', 'update'
+        resp = json_rsrc.send(@action, @resource, @id, @args)
+      when 'delete'
+        resp = json_rsrc.send(@action, @resource, @id)
+      when 'create'
+        resp = json_rsrc.send(@action, @resource, @args)
+      else
+        raise "failed to dispatch for action #{@action}"
+      end
+    rescue RestClient::ResourceNotFound => e
+      @log.info e.message
+      exit_with_usage "#{@resource} is not a valid resource"
     end
 
     resp_obj = json_rsrc.response
