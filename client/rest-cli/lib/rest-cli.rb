@@ -59,7 +59,7 @@ class RestCli
 
     output_method = "output_" + @action + "_" + @resource
     output = false
-    if req_success and respond_to?(output_method)
+    if resp and req_success and respond_to?(output_method)
       output = self.send(output_method, resp)
     end
 

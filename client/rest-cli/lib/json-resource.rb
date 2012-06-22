@@ -27,7 +27,7 @@ module RestClient
       @resp = @client[resource].delete
       parse @resp.body
     end
-    
+
     def update(resource, id, obj)
       resource = [resource, id].join("/") if id
       @resp = @client[resource].put(generate(obj))
@@ -48,17 +48,17 @@ module RestClient
       end
       return obj
     end
-    
+
     def parse(content)
-      unless content.nil? or content.empty?
+      unless content.nil? or content.match(/^\s*$/)
         begin
           return JSON.parse(content)
-        rescue Exception => e
+        rescue JSON::ParserError => e
           warn "Error: " + e.message + ".  Content was: " + content
         end
       end
 
-      return ""
+      nil
     end
   end
 end
