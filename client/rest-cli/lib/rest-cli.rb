@@ -20,7 +20,6 @@ class RestCli
       @log.level = Logger::WARN
     end
 
-
     # config settings are in three places (from lowest to highest precendence)
     # defaults (none set here, they should be in the child class)
     # ~/.foorc file
@@ -30,6 +29,7 @@ class RestCli
     parse_opts
   end
 
+  # this is a stub, see child classes for implementation
   def set_defaults
   end
 
@@ -44,15 +44,21 @@ class RestCli
     end
 
     json_rsrc = RestClient::Resource::Json.new(@base_url)
-    case @action
-    when 'get', 'update'
-      resp = json_rsrc.send(@action, @resource, @id, @args)
-    when 'delete'
-      resp = json_rsrc.send(@action, @resource, @id)
-    when 'create'
-      resp = json_rsrc.send(@action, @resource, @args)
-    else
-      raise "failed to dispatch for action #{@action}"
+    begin
+      case @action
+      when 'get', 'update'
+        resp = json_rsrc.send(@action, @resource, @id, @args)
+      when 'delete'
+        resp = json_rsrc.send(@action, @resource, @id)
+      when 'create'
+        resp = json_rsrc.send(@action, @resource, @args)
+      else
+        raise "failed to dispatch for action #{@action}"
+      end
+    rescue Errno::ECONNREFUSED => e
+      @log.debug e.backtrace
+      @log.fatal "Error when connecting to #{@base_url}: #{e.message}"
+      exit 1
     end
 
     resp_obj = json_rsrc.response
