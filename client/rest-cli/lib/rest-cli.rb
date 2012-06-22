@@ -12,7 +12,14 @@ class RestCli
 
     # --verbose will set this to DEBUG, which we should do as early as possible
     @log = Logger.new(STDERR)
-    @log.level = @opts.delete("--verbose") ? Logger::DEBUG : Logger::WARN
+
+    if @opts.delete("--verbose")
+      @log.level = Logger::DEBUG
+      RestClient.log = @log
+    else
+      @log.level = Logger::WARN
+    end
+
 
     # config settings are in three places (from lowest to highest precendence)
     # defaults (none set here, they should be in the child class)
