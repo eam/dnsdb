@@ -59,6 +59,17 @@ class RestCli
       @log.debug e.backtrace
       @log.fatal "Error when connecting to #{@base_url}: #{e.message}"
       exit 1
+    rescue RestClient::Exception => e
+      @log.fatal e.message
+      body = e.http_body
+      begin
+        if body and !body.empty?
+          puts JSON.pretty_generate JSON.parse body
+        end
+      rescue JSON::ParserError => e
+        @log.error "Response body wasn't JSON"
+      end
+      exit 1
     end
 
     resp_obj = json_rsrc.response
@@ -68,9 +79,6 @@ class RestCli
     end
 
     req_success = (resp_obj.code < 400)
-    if !req_success
-      $stderr.puts "#{resp_obj.code} #{RestClient::STATUSES[resp_obj.code]}"
-    end
 
     output_method = "output_" + @action + "_" + @resource
     output = false
