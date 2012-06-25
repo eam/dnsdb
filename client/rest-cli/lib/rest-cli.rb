@@ -69,10 +69,6 @@ class RestCli
     req_success = (resp_obj.code < 400)
     if !req_success
       $stderr.puts "#{resp_obj.code} #{RestClient::STATUSES[resp_obj.code]}"
-
-      if resp_obj.code == 404
-        exit_with_usage "#{@resource} is not a valid resource"
-      end
     end
 
     output_method = "output_" + @action + "_" + @resource
