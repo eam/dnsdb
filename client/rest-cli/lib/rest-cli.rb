@@ -64,6 +64,7 @@ class RestCli
     resp_obj = json_rsrc.response
     if @raw
       puts resp_obj.body
+      return
     end
 
     req_success = (resp_obj.code < 400)
@@ -73,11 +74,11 @@ class RestCli
 
     output_method = "output_" + @action + "_" + @resource
     output = false
-    if !@raw && resp and req_success and respond_to?(output_method)
+    if resp and req_success and respond_to?(output_method)
       output = self.send(output_method, resp)
     end
 
-    if !@raw && !output && resp && !resp.empty?
+    if !output && resp && !resp.empty?
       puts JSON.pretty_generate(resp)
     end
   end

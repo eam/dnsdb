@@ -5,45 +5,33 @@ require 'json'
 module RestClient
   class Resource::Json
     def initialize(url)
-      @client = RestClient::Resource.new(url, {
-        :raw_response => true,
-        :headers => {
-          :accept => :json,
-          :content_type => :json
-        }
+      @client = RestClient::Resource.new(url, :headers => {
+        :accept => :json,
+        :content_type => :json
       })
-    end
-
-    def process_response(body, res, request)
-        @resp = Response.create(Request.decode(res['content-encoding'], body), res, request.args)
-        return parse body
     end
 
     def get(resource, id=nil, params={})
       resource = [resource, id].join("/") if id
-      @client[resource].get({ :params => params }) do |raw_response, request, res|
-        return process_response raw_response.to_s, res, request
-      end
+      @resp = @client[resource].get({ :params => params })
+      parse @resp.body
     end
 
     def create(resource, obj)
-      @client[resource].post(generate(obj)) do |raw_response, request, res|
-        return process_response raw_response.to_s, res, request
-      end
+      @resp = @client[resource].post(generate(obj))
+      parse @resp.body
     end
 
     def delete(resource, id)
       resource = [resource, id].join("/")
-      @client[resource].delete do |raw_response, request, res|
-        return process_response raw_response.to_s, res, request
-      end
+      @resp = @client[resource].delete
+      parse @resp.body
     end
 
     def update(resource, id, obj)
       resource = [resource, id].join("/") if id
-      @client[resource].put(generate(obj)) do |raw_response, request, res|
-        return process_response raw_response.to_s, res, request
-      end
+      @resp = @client[resource].put(generate(obj))
+      parse @resp.body
     end
 
     def response
