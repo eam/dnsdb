@@ -25,3 +25,4 @@ gem 'jquery-rails'
 gem 'activevalidators'
 gem 'netaddr'
 gem 'thin'
+gem 'mocha' # for running tests

@@ -5,9 +5,13 @@ class ApplicationController < ActionController::Base
 
   private
   def render_500(exception)
-    @error = exception
+    # this only handles error in json.  the default handler can do non-json
+    if !self.request.format.json?
+      raise exception
+    end
+
     respond_to do |format|
-      format.json { render :json => { :error => @error }, :status => :internal_server_error }
+      format.json { render :json => { :error => exception.message }, :status => :internal_server_error }
     end
   end
 end
