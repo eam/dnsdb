@@ -99,10 +99,11 @@ Usage: #{$PROGRAM_NAME} <action> <resource> [<id>] [--option ...] [--key value .
 Actions: create, get, update, delete
 
 Global Options:
-    --help        print this usage message and exit
-    --verbose     print debugging information
-    --url <url>   the base url to preface all HTTP requests with
-    --raw         do not format the output
+    --help           print this usage message and exit
+    --verbose        print debugging information
+    --url <url>      the base url to preface all HTTP requests with
+    --no-really-null send the string NULL instead of NULL (as in does not exist)
+    --raw            do not format the output
 
 All other key/value options are structured as a JSON object and sent as the body
 of the HTTP request.
@@ -115,6 +116,7 @@ EOF
     # parse out all known single option arguments
     @help = @opts.delete("--help")
     @raw = @opts.delete("--raw")
+    @no_really_null = @opts.delete("--no-really-null")
 
     # get the action
     @action = @opts.shift
@@ -149,6 +151,10 @@ EOF
 
       if !value.match(/^-/).nil?
         exit_with_usage("missing value for key '" + key + "'")
+      end
+
+      if !@no_really_null && value == "NULL"
+        value = nil
       end
 
       @args[key] = value
