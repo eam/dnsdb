@@ -26,3 +26,4 @@ gem 'activevalidators'
 gem 'netaddr'
 gem 'thin'
 gem 'mocha' # for running tests
+gem 'openbanana', '>= 1.0.1'

@@ -6,3 +6,4 @@ require File.expand_path('../config/application', __FILE__)
 
 DNSDB::Application.load_tasks
 
+require 'openbanana/tasks'

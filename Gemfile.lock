@@ -68,6 +68,7 @@ GEM
     multi_json (1.3.4)
     mysql2 (0.3.11)
     netaddr (1.5.0)
+    openbanana (1.0.1)
     polyglot (0.3.3)
     rack (1.4.1)
     rack-cache (1.2)
@@ -130,6 +131,7 @@ DEPENDENCIES
   mocha
   mysql2
   netaddr
+  openbanana (>= 1.0.1)
   rails (= 3.2.2)
   sass-rails (~> 3.2.3)
   therubyracer
