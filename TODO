@@ -3,8 +3,9 @@ error if you change state from in_use to available for an IP that exists in reco
 set defaults in config file for several settings (like defaults for soa record)
 headers to disable automatically creating/modifying domains, soa, ptr records
 don't allow deleting of domain until all records are deleted first
-complete all valiations for record
-404 and 500 errors should respect Accept header
+validate that content is unique for all PTR records
+validate there is only one SOA per domain
+don't allow changes to the record if the domain is type SLAVE
 write audit job that validates records match domain, valid soa, orphan records, ptr errors, etc
 soa serial number should increment date format on change
 only update soa once per transaction (or every N minutes?)
