@@ -32,7 +32,7 @@ You can get a list of all subnets
 Or the details of a particular subnet
 
     $ dnsdb get subnets 192.168.1.0/24
- 
+
 You cannot create overlapping subnets.
 
 ### IPs
@@ -42,7 +42,7 @@ IPs are part of a subnet.  To list all of the IPs in a particular subnet specify
 
     $ dnsdb get ips --subnet 192.168.1.0/24
 
-You can't directly create or delete IPs.  You must create the corrisponding 
+You can't directly create or delete IPs.  You must create the corrisponding
 subnet and IPs will be created for you.
 
 Each IP has an associated state.  Valid states are:
@@ -54,7 +54,7 @@ You can allocate an IP from the 192.168.1.0/24 subnet like this:
 
     $ dnsdb update ips --subnet 192.168.1.0/24 --state in_use
 
-This will choose an available IP from this subnet and change its state to 
+This will choose an available IP from this subnet and change its state to
 <code>in_use</code>.  If you want to allocate a particular IP just specify the
 ip when updating the state:
 
@@ -62,8 +62,8 @@ ip when updating the state:
 
 ### Domains
 
-Domains (sometimes called zones) are a portion of a domain name space that is 
-tracked by this system.  
+Domains (sometimes called zones) are a portion of a domain name space that is
+tracked by this system.
 
 You can create a domain like this:
 
@@ -83,12 +83,12 @@ can modify (or set at create time):
       "account": null
     }
 
-The domain resource is designed to be read directly by the 
-[PowerDNS](http://powerdns.com) server.  Read the PowerDNS docs for details on 
+The domain resource is designed to be read directly by the
+[PowerDNS](http://powerdns.com) server.  Read the PowerDNS docs for details on
 these fields.
 
 When you create a domain that does not have a type of <code>SLAVE</code> a SOA
-record for the domain is automatically created.  You can change the values of 
+record for the domain is automatically created.  You can change the values of
 this SOA record by modifying the record resource (see the next section).
 
 You cannot delete a domain unless you have first deleted all associated records.
@@ -101,7 +101,7 @@ Records are the basic unit of DNS.  You can create a record like this:
 
 This will create a record that looks like this:
 
-    $ dnsdb get records 17 
+    $ dnsdb get records 17
     {
       "id": 17,
       "domain_id": 1,
@@ -116,12 +116,12 @@ This will create a record that looks like this:
 You have to use the id field rather then the name to uniquely identify a record.
 This is because DNS allows two records with the same name.
 
-These records are designed to be read directly by 
-[PowerDNS](http://powerdns.com).  See the PowerDNS docs for details about how 
+These records are designed to be read directly by
+[PowerDNS](http://powerdns.com).  See the PowerDNS docs for details about how
 each of these fields are used.
 
 Note that the domain was automatically determined for you.  This is done using
-a best fit algorithm.  You can override this by specifying 
+a best fit algorithm.  You can override this by specifying
 <code>--domain</code> when creating or updating the record.
 
 If your DNS server is configured to read this data (i.e. PowerDNS is pointing at
@@ -130,36 +130,59 @@ the DNSDB database) you should be able query this newly created record:
     $ host -t A foo.example.com
     foo.example.com has address 192.168.1.22
 
-When you create an A record the associated PTR record is created for you.  If 
-the necessary <code>in-addr.arpa</code> domain does not exist, it is 
+When you create an A record the associated PTR record is created for you.  If
+the necessary <code>in-addr.arpa</code> domain does not exist, it is
 automatically created as well.  Automatic creation of domains only happens when
-the PTR records are automatically created.  Directly creating records in a 
+the PTR records are automatically created.  Directly creating records in a
 domain that doesn't exist will result in an error.
 
-When you delete an A record the associated PTR record is also deleted.  The 
-<code>in-addr.arpa</code> domain is not deleted even if this is the last record 
-in that zone.  When the name or content of an A record is modified the 
-associated PTR record is deleted and a new PTR record matching the modified A 
+When you delete an A record the associated PTR record is also deleted.  The
+<code>in-addr.arpa</code> domain is not deleted even if this is the last record
+in that zone.  When the name or content of an A record is modified the
+associated PTR record is deleted and a new PTR record matching the modified A
 record is created.
 
 Anytime you modify any records in a given zone the SOA record's serial number is
-automatically incremented for you.  The <code>yyyymmddnn</code> format for 
-serial numbers as recommended in 
+automatically incremented for you.  The <code>yyyymmddnn</code> format for
+serial numbers as recommended in
 [RFC1537](http://www.faqs.org/rfcs/rfc1537.html) is respected.
 
-When you create A records the content must be a valid (and existant) IP 
+When you create A records the content must be a valid (and existant) IP
 resource.  If the state is <code>available</code> it will automatically be set
-to <code>in_use</code> for you.  You will not be able to set the IP to 
+to <code>in_use</code> for you.  You will not be able to set the IP to
 <code>available</code> until you first delete the associated A record.  Deleting
 the A record will automatically set the IP to <code>available</code>.
 
 ## FAQ
 
-#### What about IPv6, DNSSEC, etc?
+#### What kind of authentication or authorization does DNSDB do?
+
+None right now.  It'd be great if you submit a patch!  We restrict access via
+ACLs to the host and this mets our needs, but it certainly has its shortcomings.
+
+#### This is a rails app, what's the web UI like?
+
+It has no usable web UI.  The focus has been on the CLI.  There is some code
+that was generated by rails for some html, css, etc, but it most certainly
+does not work.  Patches welcome!
 
 #### Does DNSDB automatically manage PTR and SOA records for me?
 
+Yes, mostly.  When you create an A record the PTR record is automatically
+created for you if it already exists.  When the last A record for a name
+is deleted the associated PTR record is also deleted.
+
+The SOA record is automatically created for you when you create a domain.
+You're free to delete it or modify it if you'd like, but that might break
+things. When you add a record to the domain the serial number in the SOA
+record is increased.  The code that increases the serial number could
+use some work.  Patches welcome!
+
 #### How do I turn up a DNS server to serve the data that's in DNSDB?
+
+Use a zone transfer.
 
 #### Can I use another DNS server besides PowerDNS?
 
+Yes, but it would take some work.  You'd need to write some code that would
+read the PowerDNS data and generate, say, BIND configs.
