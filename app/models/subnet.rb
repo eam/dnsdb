@@ -48,10 +48,10 @@ class Subnet < ActiveRecord::Base
     end
 
     # set base, broadcast and gateway IP's to 'in_use'
-    Ip.find_by_ip(cidr.nth(0)) { |ip| ip.state = "in_use" }
+    Ip.find_by_ip(cidr.nth(0)) { |ip| ip.state = "in_use"; ip.save }
     if cidr.size > 1
-      Ip.find_by_ip(cidr.nth(1)) { |ip| ip.state = "in_use" }
-      Ip.find_by_ip(cidr.last)   { |ip| ip.state = "in_use" }
+      Ip.find_by_ip(cidr.nth(1)) { |ip| ip.state = "in_use"; ip.save }
+      Ip.find_by_ip(cidr.last)   { |ip| ip.state = "in_use"; ip.save }
     end
   end
  
