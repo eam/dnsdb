@@ -42,10 +42,13 @@ class SubnetTest < ActiveSupport::TestCase
   
   test "ips are correctly created and destroyed" do
     s = Subnet.create( :base => "12.1.0.0", :mask_bits => 24 )
+
+    assert_equal s.ips.where( :state => "in_use" ).pluck(:ip), [ '12.1.0.0', '12.1.0.1', '12.1.0.255' ], "network, gateway and broadcast ips are in_use"
+
     assert_equal s.ips.count, 256, "there are 256 ips in a /24 subnet"
 
     in_use_ips = s.ips.where( :state => "available" ).pluck( :ip )
-    assert_equal in_use_ips.length, 256, "all ips in a /24 are available"
+    assert_equal in_use_ips.length, 253, "all but .0, .1 and .255 in a /24 are available"
 
     s_id = s.id
     s.destroy
