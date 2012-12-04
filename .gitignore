@@ -16,3 +16,6 @@
 
 # Ignore built gem files
 *.gem
+
+# Ignore VIM swp files
+*.swp

@@ -35,7 +35,7 @@ ActiveRecord::Schema.define(:version => 2) do
     t.integer "domain_id"
     t.string  "name"
     t.string  "type",        :limit => 10
-    t.text    "content",     :limit => 16777215
+    t.text    "content",     :limit => 64000
     t.integer "ttl"
     t.integer "prio"
     t.integer "change_date"

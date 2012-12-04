@@ -46,6 +46,13 @@ class Subnet < ActiveRecord::Base
     cidr.enumerate.each do |ip|
       Ip.create!( :ip => ip, :state => "available", :subnet => subnet )
     end
+
+    # set base, broadcast and gateway IP's to 'in_use'
+    Ip.find_by_ip(cidr.nth(0)) { |ip| ip.state = "in_use" }
+    if cidr.size > 1
+      Ip.find_by_ip(cidr.nth(1)) { |ip| ip.state = "in_use" }
+      Ip.find_by_ip(cidr.last)   { |ip| ip.state = "in_use" }
+    end
   end
  
   # don't allow updates, only create, read and destroy

@@ -1,23 +1,15 @@
 development:
-  adapter: mysql2
+  adapter: sqlite3
   encoding: utf8
-  reconnect: false
-  database: dnsdb_dev
+  database: /tmp/development.sqlite3
   pool: 5
-  username: dnsdb
-  password: u1g2Iugg7
-  socket: /var/run/mysqld/mysqld.sock
-
+  timeout: 5000
 test:
-  adapter: mysql2
+  adapter: sqlite3
   encoding: utf8
-  reconnect: false
-  database: dnsdb_test
+  database: /tmp/development.sqlite3
   pool: 5
-  username: dnsdb
-  password: bCiEovHN
-  socket: /var/run/mysqld/mysqld.sock
-
+  timeout: 5000
 production:
   adapter: mysql2
   encoding: utf8
